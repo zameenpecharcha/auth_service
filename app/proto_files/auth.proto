@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc SendOTP(OTPRequest) returns (OTPResponse);
+  rpc VerifyOTP(VerifyOTPRequest) returns (VerifyOTPResponse);
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
+  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+  string refresh_token = 2;
+  UserInfo user_info = 3;  // Added user info in response
+}
+
+message UserInfo {
+  int64 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string phone = 5;
+  string profile_photo = 6;
+  string role = 7;
+  string address = 8;
+  float latitude = 9;
+  float longitude = 10;
+  string bio = 11;
+  bool isactive = 12;
+  bool email_verified = 13;
+  bool phone_verified = 14;
+  string last_login_at = 15;
+  string created_at = 16;
+}
+
+message OTPRequest {
+  string email = 1;
+  string phone = 2;  // Optional phone number for SMS
+  OTPType type = 3;  // Purpose of OTP
+}
+
+enum OTPType {
+  VERIFICATION = 0;
+  PASSWORD_RESET = 1;
+  LOGIN = 2;
+}
+
+message OTPResponse {
+  bool success = 1;
+  string message = 2;  // Added for more detailed response
+  repeated string channels = 3;  // List of channels where OTP was sent (email, sms)
+}
+
+message VerifyOTPRequest {
+  string email = 1;
+  string otp_code = 2;
+  OTPType type = 3;  // Purpose of verification
+}
+
+message VerifyOTPResponse {
+  string token = 1;
+  UserInfo user_info = 2;  // Added user info in response
+  bool success = 3;
+  string message = 4;  // Added for more detailed response
+}
+
+message ForgotPasswordRequest {
+  string email = 1;
+  string phone = 2;  // Optional phone number for SMS verification
+}
+
+message ForgotPasswordResponse {
+  bool success = 1;
+  string message = 2;  // Added for more detailed response
+  repeated string channels = 3;  // List of channels where reset instructions were sent
+}
+
+message ResetPasswordRequest {
+  string email = 1;
+  string otp_code = 2;
+  string new_password = 3;
+  string confirm_password = 4;  // Added password confirmation
+}
+
+message ResetPasswordResponse {
+  bool success = 1;
+  string message = 2;  // Added for more detailed response
+  UserInfo user_info = 3;  // Optional user info after reset
+}
+
+message LogoutRequest {
+  string token = 1;
+  string refresh_token = 2;
+}
+
+message LogoutResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  UserInfo user_info = 2;
+  string message = 3;
+}
