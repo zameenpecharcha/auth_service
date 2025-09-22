@@ -1,0 +1,10 @@
+SQLAlchemy
+python-dotenv
+psycopg2
+grpcio
+protobuf
+grpcio-tools
+twilio
+sendgrid
+bcrypt
+redis
