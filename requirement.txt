@@ -1,10 +1,11 @@
 SQLAlchemy
 python-dotenv
-psycopg2
+psycopg2-binary
 grpcio
 protobuf
 grpcio-tools
 twilio
 sendgrid
 bcrypt
+PyJWT
 redis

@@ -24,7 +24,9 @@ def get_db_engine():
             raise ValueError("Missing database configuration. Please check your .env file.")
             
         DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-        engine = create_engine(DATABASE_URL)
+        ssl_mode = os.getenv("DB_SSLMODE", "")
+        connect_args = {"sslmode": ssl_mode} if ssl_mode else {}
+        engine = create_engine(DATABASE_URL, connect_args=connect_args)
         
         # Test the connection with proper SQLAlchemy query
         with engine.connect() as conn:

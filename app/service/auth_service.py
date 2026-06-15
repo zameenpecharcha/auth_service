@@ -1,3 +1,4 @@
+import os
 import grpc
 import bcrypt
 import jwt
@@ -453,7 +454,8 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     auth_pb2_grpc.add_AuthServiceServicer_to_server(AuthService(), server)
-    server.add_insecure_port('localhost:50052')
-    print("Starting auth service on port 50052...")
+    port = os.environ.get("PORT", "50052")
+    server.add_insecure_port(f"0.0.0.0:{port}")
+    print(f"Starting auth service on port {port}...")
     server.start()
     server.wait_for_termination()

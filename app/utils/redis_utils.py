@@ -77,19 +77,29 @@ otp_store = OTPStore()
 def get_redis_client():
     try:
         load_dotenv()
-        redis_host = os.getenv("REDIS_HOST", "localhost")
-        redis_port = int(os.getenv("REDIS_PORT", 6379))
-        
-        print(f"Attempting to connect to Redis at {redis_host}:{redis_port}")
-        
-        client = redis.StrictRedis(
-            host=redis_host,
-            port=redis_port,
-            decode_responses=True,
-            socket_connect_timeout=2,
-            socket_timeout=2
-        )
-        
+        redis_url = os.getenv("REDIS_URL")
+        if redis_url:
+            # Upstash / TLS URL (rediss://...)
+            client = redis.from_url(
+                redis_url,
+                decode_responses=True,
+                socket_connect_timeout=2,
+                socket_timeout=2,
+            )
+        else:
+            redis_host = os.getenv("REDIS_HOST", "localhost")
+            redis_port = int(os.getenv("REDIS_PORT", 6379))
+            redis_password = os.getenv("REDIS_PASSWORD", None)
+            client = redis.StrictRedis(
+                host=redis_host,
+                port=redis_port,
+                password=redis_password,
+                decode_responses=True,
+                socket_connect_timeout=2,
+                socket_timeout=2,
+            )
+
+        print(f"Attempting to connect to Redis...")
         client.ping()
         print("Connected to Redis successfully!")
         return client

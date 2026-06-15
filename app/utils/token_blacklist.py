@@ -1,6 +1,6 @@
 import hashlib
 import jwt
-from auth_service.app.utils.redis_utils import get_redis_client
+from app.utils.redis_utils import get_redis_client
 
 # Set up Redis connection (assuming it's already configured)
 redis_client = get_redis_client()

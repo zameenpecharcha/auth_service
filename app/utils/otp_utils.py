@@ -1,5 +1,8 @@
 import os
-from twilio.rest import Client
+try:
+    from twilio.rest import Client as TwilioClient
+except ImportError:
+    TwilioClient = None
 import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
@@ -24,7 +27,10 @@ def send_otp_sms(phone_number, otp_code):
     if not all([account_sid, auth_token, twilio_number]):
         print("Twilio credentials are not set in environment variables.")
         return False
-    client = Client(account_sid, auth_token)
+    if TwilioClient is None:
+        print("Twilio not installed, cannot send SMS.")
+        return False
+    client = TwilioClient(account_sid, auth_token)
     message = f"Your OTP code is: {otp_code}"
     try:
         client.messages.create(

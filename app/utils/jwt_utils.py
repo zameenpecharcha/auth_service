@@ -2,7 +2,7 @@ import jwt
 import uuid
 from datetime import datetime, timedelta
 
-from auth_service.app.utils.token_blacklist import is_token_blacklisted
+from app.utils.token_blacklist import is_token_blacklisted
 
 # Load your private key once at module level
 with open("config/private.pem", "r") as f:
