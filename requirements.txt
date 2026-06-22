@@ -4,10 +4,8 @@ psycopg2-binary
 grpcio
 protobuf
 grpcio-tools
-twilio
-sendgrid
 bcrypt
-PyJWT
-redis
+PyJWT[crypto]
+cryptography
 grpcio-reflection
 grpcio-health-checking

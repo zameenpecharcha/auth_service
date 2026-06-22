@@ -316,7 +316,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 "role": user.role,
                 "exp": datetime.utcnow() + timedelta(hours=1)
             }
-            token = jwt.encode(token_data, SECRET_KEY, algorithm="HS256")
+            token = jwt.encode(token_data, SECRET_KEY, algorithm="RS256")
 
             log_msg("info", message, user_id=request.email, correlation_id=correlation_id)
             return auth_pb2.VerifyOTPResponse(
@@ -479,7 +479,7 @@ def serve():
         reflection.SERVICE_NAME,
     )
     reflection.enable_server_reflection(SERVICE_NAMES, server)
-    port = os.environ.get("PORT", "50052")
+    port = os.environ.get("GRPC_PORT", "50052")
     server.add_insecure_port(f"0.0.0.0:{port}")
     print(f"Starting auth gRPC service on port {port}...")
     server.start()

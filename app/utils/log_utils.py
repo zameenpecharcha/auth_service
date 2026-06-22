@@ -5,7 +5,7 @@ class CustomAdapter(logging.LoggerAdapter):
         return f'UserID: {self.extra.get("user_id", "N/A")} | CorrelationID: {self.extra.get("correlation_id", "N/A")} | {msg}', kwargs
 
 
-def log_msg(level: str, message: str, user_id: str, correlation_id: str):
+def log_msg(level: str, message: str, user_id: str = None, correlation_id: str = None):
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%m/%d/%Y %I:%M:%S %p",
