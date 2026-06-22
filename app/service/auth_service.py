@@ -450,12 +450,37 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             return auth_pb2.ResetPasswordResponse(success=False, message=str(e))
         finally:
             db.close()
-
+import os
+import grpc
+from concurrent import futures
+from grpc_reflection.v1alpha import reflection
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     auth_pb2_grpc.add_AuthServiceServicer_to_server(AuthService(), server)
+    health_servicer = health.HealthServicer()
+    health_pb2_grpc.add_HealthServicer_to_server(
+        health_servicer,
+        server,
+    )
+
+    health_servicer.set(
+        "",
+        health_pb2.HealthCheckResponse.SERVING,
+    )
+
+    SERVICE_NAMES = (
+        auth_pb2.DESCRIPTOR.services_by_name[
+            "AuthService"
+        ].full_name,
+        health_pb2.DESCRIPTOR.services_by_name[
+        "Health"
+        ].full_name,
+        reflection.SERVICE_NAME,
+    )
+    reflection.enable_server_reflection(SERVICE_NAMES, server)
     port = os.environ.get("PORT", "50052")
     server.add_insecure_port(f"0.0.0.0:{port}")
-    print(f"Starting auth service on port {port}...")
+    print(f"Starting auth gRPC service on port {port}...")
     server.start()
     server.wait_for_termination()
