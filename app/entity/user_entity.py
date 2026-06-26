@@ -50,9 +50,11 @@ class UserFollower(Base):
 engine = get_db_engine()
 
 # Only create tables if they don't exist
-Base.metadata.create_all(engine)
-
-print("Database tables verified!")
+try:
+    Base.metadata.create_all(engine)
+    print("Database tables verified!")
+except Exception as e:
+    print(f"[WARN] Could not verify/create tables: {e}")
 
 # Initialize the database session
 SessionLocal = sessionmaker(bind=engine)

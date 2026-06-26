@@ -29,11 +29,14 @@ def get_db_engine():
         engine = create_engine(DATABASE_URL, connect_args=connect_args)
         
         # Test the connection with proper SQLAlchemy query
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-            conn.commit()
-            
-        print("Connected to PostgreSQL database successfully!")
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+                conn.commit()
+            print("Connected to PostgreSQL database successfully!")
+        except Exception as conn_err:
+            print(f"[WARN] DB connection test failed (will retry on first request): {conn_err}")
+
         return engine
     except Exception as e:
         print(f"Database connection error: {str(e)}")

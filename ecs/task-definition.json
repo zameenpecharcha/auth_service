@@ -1,0 +1,60 @@
+{
+  "family": "auth-service",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "auth-service",
+      "image": "ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/auth-service:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 50052,
+          "hostPort": 50052,
+          "protocol": "tcp",
+          "name": "grpc"
+        }
+      ],
+      "environment": [
+        { "name": "GRPC_PORT",            "value": "50052" },
+        { "name": "DB_USER",              "value": "neondb_owner" },
+        { "name": "DB_HOST",              "value": "ep-noisy-sun-aizw55l4.c-4.us-east-1.aws.neon.tech" },
+        { "name": "DB_PORT",              "value": "5432" },
+        { "name": "DB_NAME",              "value": "zpc" },
+        { "name": "DB_SSLMODE",           "value": "require" },
+        { "name": "SMTP_SERVER",          "value": "smtp.gmail.com" },
+        { "name": "SMTP_PORT",            "value": "587" },
+        { "name": "SMTP_USER",            "value": "zpc.media06@gmail.com" },
+        { "name": "FROM_EMAIL",           "value": "zpc.media06@gmail.com" },
+        { "name": "TWILIO_ACCOUNT_SID",   "value": "" },
+        { "name": "TWILIO_AUTH_TOKEN",    "value": "" },
+        { "name": "TWILIO_PHONE_NUMBER",  "value": "" },
+        { "name": "DB_PASSWORD",          "value": "npg_dcg37brLCZUu" },
+        { "name": "REDIS_URL",            "value": "rediss://default:gQAAAAAAAQrpAAIgcDJiYjFmMTNlOTJmMWQ0ZjEwYTUwZWVlNjYyNjFhMDVkOQ@relevant-spider-68329.upstash.io:6379" },
+        { "name": "SMTP_PASSWORD",        "value": "tafo kjdl oppm ylro" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/auth-service",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "python -c \"import grpc; from grpc_health.v1 import health_pb2, health_pb2_grpc; ch = grpc.insecure_channel('localhost:50052'); stub = health_pb2_grpc.HealthStub(ch); r = stub.Check(health_pb2.HealthCheckRequest()); exit(0 if r.status == 1 else 1)\" || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 15
+      }
+    }
+  ]
+}

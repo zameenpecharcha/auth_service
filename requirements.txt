@@ -9,3 +9,4 @@ PyJWT[crypto]
 cryptography
 grpcio-reflection
 grpcio-health-checking
+redis
